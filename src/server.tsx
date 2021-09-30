@@ -83,9 +83,6 @@ function handleApiFunctionRoute(_request: Request, _pathname: string): Response 
 }
 
 async function handleClientBrowserRoute(request: Request, pathname: string): Promise<Response> {
-   const headers = new Headers();
-   headers.append("content-type", "text/html; charset=8");
-
    let ssr: string;
    let initialData: unknown;
 
@@ -96,25 +93,29 @@ async function handleClientBrowserRoute(request: Request, pathname: string): Pro
 
       if (route.beforeView) {
          if (route.beforeView.constructor.name === "AsyncFunction") {
-            initialData = await route.beforeView();
-         }
-         if (route.beforeView.constructor.name === "Function") {
-            initialData = route.beforeView();
+            const { props } = await (route.beforeView as any)();
+            initialData = props;
+         } else {
+            const { props } = (route.beforeView as any)();
+            initialData = props;
          }
       }
 
-      ssr = ReactDomServer.renderToString(
+      ssr = ReactDomServer.renderToStaticMarkup(
          <Document initialData={JSON.stringify(initialData)} route={pathname}>
             <App PageProps={initialData} Component={route.component} />
          </Document>,
-      );
+      ).replace("</body>", `<script src="/_deno/chunks/__bundle.js" defer type="module"></script></body>`);
    } else {
-      ssr = ReactDomServer.renderToString(
+      ssr = ReactDomServer.renderToStaticMarkup(
          <Document initialData="" route={pathname}>
             <p>404</p>
          </Document>,
       );
    }
+
+   const headers = new Headers();
+   headers.append("content-type", "text/html; charset=8");
 
    return new Response(ssr, { headers });
 }
@@ -133,7 +134,7 @@ async function makeClientBrowserBundle() {
       await Deno.remove("_deno", { recursive: true });
    }
 
-   await Deno.mkdir("_deno");
+   await Deno.mkdir("_deno/chunks", { recursive: true });
 
    const { files, diagnostics } = await Deno.emit("src/pages/_app.tsx", {
       check: false,
@@ -176,8 +177,8 @@ async function makeClientBrowserBundle() {
       },
    } as any);
 
-   await Deno.writeTextFile("_deno/bundle.js", minified);
-   await Deno.writeTextFile("_deno/bundle.js.map", minified);
+   await Deno.writeTextFile("_deno/chunks/__bundle.js", minified);
+   await Deno.writeTextFile("_deno/chunks/__bundle.js.map", minified);
 }
 
 function assignEnvironment() {

@@ -1,7 +1,11 @@
 import Index from "./pages/index.tsx";
+import About from "./pages/about/index.tsx";
+
+import { nanoid } from "https://deno.land/x/nanoid@v3.0.0/mod.ts";
 
 export const Router = [
    {
+      id: nanoid(75),
       path: "/",
       component: Index,
       beforeView: async () => {
@@ -10,8 +14,30 @@ export const Router = [
          if (response.ok) {
             const users = await response.json();
 
-            return { users };
+            return {
+               props: {
+                  users,
+               },
+            };
          }
+
+         return {
+            props: {
+               users: [],
+            },
+         };
+      },
+   },
+   {
+      id: nanoid(75),
+      path: "/about",
+      component: About,
+      beforeView: () => {
+         return {
+            props: {
+               name: "me",
+            },
+         };
       },
    },
 ];

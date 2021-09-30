@@ -16,8 +16,6 @@ const _Document: React.FunctionComponent<DocumentProps> = ({ route, children, in
          <body>
             <div id="__deno">{children}</div>
             <script id="__DENO__" deno-data={initialData} deno-route={route}></script>
-
-            <script src="/_deno/bundle.js" defer type="module"></script>
          </body>
       </html>
    );

@@ -5,13 +5,12 @@ interface IndexProps {
 }
 
 const Index: React.FunctionComponent<IndexProps> = ({ users }) => {
-   if (!users) {
-      return <div>Loading....</div>;
-   }
-
    return (
       <div>
          <h3>Index Page</h3>
+
+         <a href="/about">Go to ABOUT</a>
+
          <pre>
             <code>
                {JSON.stringify(users, null, 4)}
