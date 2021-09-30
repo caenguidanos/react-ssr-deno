@@ -1,0 +1,10 @@
+{
+	"recommendations": [
+		"foxundermoon.shell-format",
+		"kisstkondoros.vscode-codemetrics",
+		"denoland.vscode-deno",
+		"zh9528.file-size",
+		"esbenp.prettier-vscode",
+		"naumovs.color-highlight"
+	]
+}
