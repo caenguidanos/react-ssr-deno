@@ -87,7 +87,7 @@ async function handleClientBrowserRoute(request: Request, pathname: string): Pro
    headers.append("content-type", "text/html; charset=8");
 
    let ssr: string;
-   let initialData: any;
+   let initialData: unknown;
 
    const route = Router.find((r) => r.path === pathname);
 
