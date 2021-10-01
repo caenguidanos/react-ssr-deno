@@ -9,12 +9,15 @@ interface DocumentProps<K = unknown> {
 
 const _Document: React.FunctionComponent<DocumentProps> = ({ route, children, data }) => {
    return (
-      <html lang="es">
+      <html lang="en">
          <head>
             <meta charSet="utf8" />
+            <meta name="viewport" content="width=device-width" />
             <meta name="description" content={route.head.description} />
-            <link rel="icon" type="image/png" href="public/favicon.png" />
+            <meta name="theme-color" content="#000" />
+
             <title>{route.head.title}</title>
+            <link rel="icon" type="image/png" href="public/favicon.png" />
 
             {route.head.link?.map((value) => <link href={value.href} rel={value.rel} />)}
          </head>
