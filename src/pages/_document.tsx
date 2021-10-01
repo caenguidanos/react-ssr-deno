@@ -1,11 +1,11 @@
 import React, { createElement as h } from "https://esm.sh/react";
 
 interface DocumentProps<K = unknown> {
-   initialData: K;
+   data: K;
    route: string;
 }
 
-const _Document: React.FunctionComponent<DocumentProps> = ({ route, children, initialData }) => {
+const _Document: React.FunctionComponent<DocumentProps> = ({ route, children, data }) => {
    return (
       <html lang="es">
          <head>
@@ -15,7 +15,8 @@ const _Document: React.FunctionComponent<DocumentProps> = ({ route, children, in
          </head>
          <body>
             <div id="__deno">{children}</div>
-            <script id="__DENO__" deno-data={initialData} deno-route={route}></script>
+
+            <script id="__DENO__" deno-data={data} deno-route={route} />
          </body>
       </html>
    );

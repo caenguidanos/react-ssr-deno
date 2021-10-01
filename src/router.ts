@@ -8,14 +8,14 @@ interface BeforeView {
    redirect?: string;
 }
 
-export type BeforeViewRouteSync = (request: Request) => BeforeView;
-export type BeforeViewRouteAsync = (request: Request) => Promise<BeforeView>;
+export type MiddlewareRouteSync = (request: Request) => BeforeView;
+export type MiddlewareRouteAsync = (request: Request) => Promise<BeforeView>;
 
 interface Route {
    id: string;
    path: string;
    component: React.FunctionComponent<any>;
-   beforeView: BeforeViewRouteSync | BeforeViewRouteAsync;
+   middleware: MiddlewareRouteSync | MiddlewareRouteAsync;
 }
 
 export const Router: Route[] = [
@@ -23,7 +23,7 @@ export const Router: Route[] = [
       id: nanoid(75),
       path: "/",
       component: Index,
-      beforeView: async (_request) => {
+      middleware: async (_request) => {
          const response = await fetch("https://jsonplaceholder.typicode.com/users");
 
          if (response.ok) {
@@ -47,7 +47,7 @@ export const Router: Route[] = [
       id: nanoid(75),
       path: "/about",
       component: About,
-      beforeView: (request) => {
+      middleware: (request) => {
          return {
             props: {
                name: request.url,

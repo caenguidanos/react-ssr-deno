@@ -8,7 +8,7 @@ import * as swc from "https://x.nest.land/swc@0.1.4/mod.ts";
 import Document from "./pages/_document.tsx";
 import App from "./pages/_app.tsx";
 
-import { BeforeViewRouteAsync, BeforeViewRouteSync, Router } from "./router.ts";
+import { MiddlewareRouteAsync, MiddlewareRouteSync, Router } from "./router.ts";
 
 assignEnvironment();
 makeClientBrowserBundle();
@@ -89,31 +89,35 @@ async function handleClientBrowserRoute(request: Request, pathname: string): Pro
    const route = Router.find((r) => r.path === pathname);
 
    if (route) {
-      let initialData: unknown = {};
+      let data: unknown = {};
 
-      if (route.beforeView) {
-         if (route.beforeView.constructor.name === "AsyncFunction") {
-            const { props, redirect } = await (route.beforeView as BeforeViewRouteAsync)(request);
+      if (route.middleware) {
+         if (route.middleware.constructor.name === "AsyncFunction") {
+            const { props } = await (route.middleware as MiddlewareRouteAsync)(request);
 
-            initialData = props;
+            data = props;
          } else {
-            const { props, redirect } = (route.beforeView as BeforeViewRouteSync)(request);
+            const { props } = (route.middleware as MiddlewareRouteSync)(request);
 
-            initialData = props;
+            data = props;
          }
       }
 
       render = ReactDomServer.renderToStaticMarkup(
-         <Document initialData={JSON.stringify(initialData)} route={pathname}>
-            <App PageProps={initialData} Component={route.component} />
-         </Document>,
-      ).replace("</body>", `<script src="/_deno/chunks/__bundle.js" defer type="module"></script></body>`);
-   } else {
-      render = ReactDomServer.renderToStaticMarkup(
-         <Document initialData="" route={pathname}>
-            <p>404</p>
+         <Document data={JSON.stringify(data)} route={pathname}>
+            <App PageProps={data} Component={route.component} />
          </Document>,
       );
+
+      render = render.replace(
+         "</body>",
+         `<script src="/_deno/chunks/__bundle.js" defer type="module"></script></body>`,
+      );
+   } else {
+      const headers = new Headers();
+      headers.append("content-type", "text/plain; charset=8");
+
+      return new Response("Ups", { headers, status: 404 });
    }
 
    const headers = new Headers();
@@ -175,7 +179,7 @@ async function makeClientBrowserBundle() {
             syntax: "typescript",
             tsx: true,
          },
-         target: "es2016",
+         target: "es2021",
       },
    } as any);
 

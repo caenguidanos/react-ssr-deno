@@ -19,11 +19,11 @@ const App: React.FunctionComponent<AppProps> = ({ PageProps, Component }) => {
 export default App;
 
 if (globalThis.document) {
-   const initialDataScript = globalThis.document.getElementById("__DENO__");
+   const dataScript = globalThis.document.getElementById("__DENO__");
 
-   if (initialDataScript) {
-      const initialData: AppProps["PageProps"] = JSON.parse(initialDataScript.getAttribute("deno-data") || "");
-      const route: string = initialDataScript.getAttribute("deno-route") || "";
+   if (dataScript) {
+      const data: AppProps["PageProps"] = JSON.parse(dataScript.getAttribute("deno-data") || "");
+      const route: string = dataScript.getAttribute("deno-route") || "";
 
       type WindowDevTools = typeof globalThis & {
          __REACT_DEVTOOLS_GLOBAL_HOOK__: {
@@ -39,7 +39,7 @@ if (globalThis.document) {
 
       if (routeInstance) {
          ReactDom.hydrate(
-            <App PageProps={initialData} Component={routeInstance.component} />,
+            <App PageProps={data} Component={routeInstance.component} />,
             globalThis.document.getElementById("__deno"),
          );
       }

@@ -13,7 +13,7 @@ const About: React.FunctionComponent<AboutProps> = ({ name }) => {
 
    return (
       <div>
-         <h3>About Page</h3>
+         <h3>About Page {name}</h3>
 
          <a href="/">Go to INDEX</a>
 
