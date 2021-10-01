@@ -104,7 +104,7 @@ async function handleClientBrowserRoute(request: Request, pathname: string): Pro
       }
 
       render = ReactDomServer.renderToStaticMarkup(
-         <Document data={JSON.stringify(data)} route={pathname}>
+         <Document data={JSON.stringify(data)} route={route}>
             <App PageProps={data} Component={route.component} />
          </Document>,
       );

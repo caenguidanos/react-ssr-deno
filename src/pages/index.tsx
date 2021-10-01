@@ -12,7 +12,7 @@ const Index: React.FunctionComponent<IndexProps> = ({ users }) => {
          <a href="/about">Go to ABOUT</a>
 
          <pre>
-            <code>
+            <code style={{ fontFamily: "IBM Plex Mono" }}>
                {JSON.stringify(users, null, 4)}
             </code>
          </pre>
