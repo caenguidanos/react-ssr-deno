@@ -5,12 +5,21 @@ interface AboutProps {
 }
 
 const About: React.FunctionComponent<AboutProps> = ({ name }) => {
+   const [state, setState] = React.useState<number>(0);
+
+   const handleButtonClick = () => {
+      setState((prev) => prev += 1);
+   };
+
    return (
       <div>
          <h3>About Page</h3>
+
          <a href="/">Go to INDEX</a>
 
-         <h5>{"--> " + name}</h5>
+         <h5>{state}</h5>
+
+         <button onClick={handleButtonClick}>++</button>
       </div>
    );
 };

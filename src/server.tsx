@@ -7,7 +7,8 @@ import * as swc from "https://x.nest.land/swc@0.1.4/mod.ts";
 
 import Document from "./pages/_document.tsx";
 import App from "./pages/_app.tsx";
-import { Router } from "./router.ts";
+
+import { BeforeViewRouteAsync, BeforeViewRouteSync, Router } from "./router.ts";
 
 assignEnvironment();
 makeClientBrowserBundle();
@@ -83,31 +84,32 @@ function handleApiFunctionRoute(_request: Request, _pathname: string): Response 
 }
 
 async function handleClientBrowserRoute(request: Request, pathname: string): Promise<Response> {
-   let ssr: string;
-   let initialData: unknown;
+   let render: string;
 
    const route = Router.find((r) => r.path === pathname);
 
    if (route) {
-      initialData = {};
+      let initialData: unknown = {};
 
       if (route.beforeView) {
          if (route.beforeView.constructor.name === "AsyncFunction") {
-            const { props } = await (route.beforeView as any)();
+            const { props, redirect } = await (route.beforeView as BeforeViewRouteAsync)(request);
+
             initialData = props;
          } else {
-            const { props } = (route.beforeView as any)();
+            const { props, redirect } = (route.beforeView as BeforeViewRouteSync)(request);
+
             initialData = props;
          }
       }
 
-      ssr = ReactDomServer.renderToStaticMarkup(
+      render = ReactDomServer.renderToStaticMarkup(
          <Document initialData={JSON.stringify(initialData)} route={pathname}>
             <App PageProps={initialData} Component={route.component} />
          </Document>,
       ).replace("</body>", `<script src="/_deno/chunks/__bundle.js" defer type="module"></script></body>`);
    } else {
-      ssr = ReactDomServer.renderToStaticMarkup(
+      render = ReactDomServer.renderToStaticMarkup(
          <Document initialData="" route={pathname}>
             <p>404</p>
          </Document>,
@@ -117,7 +119,7 @@ async function handleClientBrowserRoute(request: Request, pathname: string): Pro
    const headers = new Headers();
    headers.append("content-type", "text/html; charset=8");
 
-   return new Response(ssr, { headers });
+   return new Response(render, { headers });
 }
 
 function handleOtherRoute() {
